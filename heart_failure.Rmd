@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, message=FALSE, warning=FALSE, include = FALSE}
+```{r, message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(ggplot2)
 library(dplyr)
@@ -23,19 +23,23 @@ glimpse(heart)
 
 
 ```{r, include = FALSE}
+
+# takes you to the full database
+
 view(heart)
 ```
 
 ```{r}
 names(heart)
 range(heart$Age)
-
 ```
 
 
 
-This shows an average.
+
 ```{r}
+
+# Pulls out necessary data and changes the heart disease to a string to make it more decipherable 
 
 heart %>%
   select(Age, Sex, HeartDisease, RestingBP, Cholesterol, MaxHR) %>%
@@ -44,7 +48,10 @@ heart %>%
                                 "0" = "No")) %>%
   arrange(Age) %>%
   head(20)
-  
+
+# gives an average for necessary data for a better comparison
+
+
 heart %>%
   select(Age, Sex, HeartDisease, RestingBP, Cholesterol, MaxHR) %>%
   mutate(HeartDisease = recode(HeartDisease,

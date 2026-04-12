@@ -24,7 +24,7 @@ glimpse(heart)
 
 ```{r, include = FALSE}
 
-# takes you to the full database
+# takes you to the full database without including it in the knit
 
 view(heart)
 ```
@@ -41,7 +41,14 @@ range(heart$Age)
 
 # Pulls out necessary data and changes the heart disease to a string to make it more decipherable 
 
-heart %>%
+
+set.seed(123)
+random_sample <- heart %>%
+  sample_n(20)
+
+#I set a seed here so the data we're pulling is more random, as head(20) will only pull the first 20. 
+
+random_sample %>%
   select(Age, Sex, HeartDisease, RestingBP, Cholesterol, MaxHR) %>%
   mutate(HeartDisease = recode(HeartDisease,
                                 "1" = "Yes",
@@ -71,6 +78,18 @@ heart %>%
 ```
 
 ```{r}
+
+# cleaned heart data so the graph shows no zero values, histogram w/ facet wrap, changed the labels so it was more decipherable. I used cholesterol for this data because it seemed to have the highest correlation with heart disease, but I'll have to look into it further.
+
+heart_clean <- heart %>%
+  filter(Cholesterol != 0)
+
+
+ggplot(heart_clean, aes(x = Cholesterol, fill = "pink")) + geom_histogram(binwidth = 20) + facet_wrap(~HeartDisease, labeller = labeller(HeartDisease = c("1" = "Has Heart Disease", "0" = "No Heart Disease"))) + labs(title = "Cholesterol distribution",
+                                                                                                                                                                                                                        x = "Cholesterol level",
+                                                                                                                                                                                                                        y = "People"
+)
+
 
 ```
 

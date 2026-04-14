@@ -8,18 +8,37 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+Intro: 
+Heart disease is one of the leading causes of death worldwide, and the number 1 cause of death in the United States, about ... Americans from all ... (should i go into stats?) (citation) Understanding the its risk factors in pivotal for medical professionals and the general public ...
+
+Data Exploration: (what question we're answering and exploring, background on the data: where we got it from, the link, the author, the reasoning for the data being made available, important variables and their meanings)
+
+Packages: 
+tidyverse: data wrangling (dplyr), plotting (ggplot2) and general data manipulation 
+ggplot2
+dyplr
+janitor #cleans columns names and simple tabulations
 
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
+# tidyverse: data wrangling (dplyr), plotting (ggplot2) and general data manipulation
 library(tidyverse)
-library(ggplot2)
-library(dplyr)
+library(ggplot2) #remove this
+library(dplyr) #remove this
+# janitor: cleans columns names and simple tabulations
+library(janitor)
 ```
 
 ```{r}
-heart <- read.csv("heart.csv")
+#Import the CSV and clean column names for easier coding
+heart_raw <- read.csv("heart.csv")
+
+heart <- heart_raw %>% 
+  clean_names() # converts column names to snake_case, lowercase, no spaces
+
+#Inspect structure after cleaning
 glimpse(heart)
 ```
-
+We first read in the CSV file and use `clean_names()` to standardize the column names. This makes it easier to reference variables in the rest of the analysis (for example, `chest_pain_type` instead of `ChestPainType`).
 
 
 ```{r, include = FALSE}
@@ -31,7 +50,7 @@ view(heart)
 
 ```{r}
 names(heart)
-range(heart$Age)
+range(heart$age)
 ```
 
 
@@ -49,26 +68,26 @@ random_sample <- heart %>%
 #I set a seed here so the data we're pulling is more random, as head(20) will only pull the first 20. 
 
 random_sample %>%
-  select(Age, Sex, HeartDisease, RestingBP, Cholesterol, MaxHR) %>%
-  mutate(HeartDisease = recode(HeartDisease,
+  select(age, sex, heart_disease, resting_bp, cholesterol, max_hr) %>%
+  mutate(heart_disease = recode(heart_disease,
                                 "1" = "Yes",
                                 "0" = "No")) %>%
-  arrange(Age) %>%
+  arrange(age) %>%
   head(20)
 
 # gives an average for necessary data for a better comparison
 
 
 heart %>%
-  select(Age, Sex, HeartDisease, RestingBP, Cholesterol, MaxHR) %>%
-  mutate(HeartDisease = recode(HeartDisease,
+  select(age, sex, heart_disease, resting_bp, cholesterol, max_hr) %>%
+  mutate(heart_disease = recode(heart_disease,
                                 "1" = "Yes",
                                 "0" = "No")) %>%
-  group_by(HeartDisease) %>%
-  summarise("Average Blood Pressure" = mean(RestingBP),
-            "Average Age" = mean(Age),
-            "Cholesterol" = mean(Cholesterol),
-            "Max Heart Rate" = mean(MaxHR))
+  group_by(heart_disease) %>%
+  summarise("Average Blood Pressure" = mean(resting_bp),
+            "Average age" = mean(age),
+            "cholesterol" = mean(cholesterol),
+            "Max Heart Rate" = mean(max_hr))
 
 
 
@@ -82,11 +101,11 @@ heart %>%
 # cleaned heart data so the graph shows no zero values, histogram w/ facet wrap, changed the labels so it was more decipherable. I used cholesterol for this data because it seemed to have the highest correlation with heart disease, but I'll have to look into it further.
 
 heart_clean <- heart %>%
-  filter(Cholesterol != 0)
+  filter(cholesterol != 0)
 
 
-ggplot(heart_clean, aes(x = Cholesterol, fill = "pink")) + geom_histogram(binwidth = 20) + facet_wrap(~HeartDisease, labeller = labeller(HeartDisease = c("1" = "Has Heart Disease", "0" = "No Heart Disease"))) + labs(title = "Cholesterol distribution",
-                                                                                                                                                                                                                        x = "Cholesterol level",
+ggplot(heart_clean, aes(x = cholesterol, fill = "pink")) + geom_histogram(binwidth = 20) + facet_wrap(~heart_disease, labeller = labeller(heart_disease = c("1" = "Has Heart Disease", "0" = "No Heart Disease"))) + labs(title = "cholesterol distribution",
+                                                                                                                                                                                                                        x = "cholesterol level",
                                                                                                                                                                                                                         y = "People"
 )
 
